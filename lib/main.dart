@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:time_to_pray_app/pages/pray_list2_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:time_to_pray_app/app.dart';
+import 'package:time_to_pray_app/controllers/splash_controller.dart';
+import 'package:time_to_pray_app/firebase_options.dart';
 import 'controllers/main_navigation_controller.dart';
 import 'pages/home_page.dart';
 import 'pages/search_page.dart';
 import 'pages/pray_list_page.dart';
+import 'pages/pray_list2_page.dart';
 
-void main() {
+late SharedPreferences prefs;
+void main() async {
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Firebase SDK가 안드로이드와 ios의 네이티브 코드와 상호작용하기 위해서 설정.
+  prefs = await SharedPreferences.getInstance();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); 
+
   runApp(const TimeToPrayApp());
 }
 
@@ -21,7 +34,19 @@ class TimeToPrayApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const MainScaffold(),
+      initialBinding: BindingsBuilder(() {
+        Get.put(MainNavigationController());
+        Get.put(SplashController());
+      }),
+      initialRoute: '/',
+      getPages: [
+        //GetPage(name: '/', page: () => const MainScaffold()),
+        GetPage(name: '/', page: () => const App()),
+        GetPage(name: '/home', page: () => const HomePage()),
+        GetPage(name: '/search', page: () => SearchPage()),
+        GetPage(name: '/prayList', page: () => PrayListPage()),
+        GetPage(name: '/prayList2', page: () => PrayList2Page()),
+      ],
     );
   }
 }
@@ -31,8 +56,7 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MainNavigationController navController =
-        Get.put(MainNavigationController());
+    final navController = Get.find<MainNavigationController>();
 
     final pages = [
       const HomePage(),
@@ -58,10 +82,7 @@ class MainScaffold extends StatelessWidget {
             ),
           ],
         ),
-        body: IndexedStack(
-          index: currentIndex,
-          children: pages,
-        ),
+        body: pages[currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: navController.changeTab,
@@ -80,3 +101,4 @@ class MainScaffold extends StatelessWidget {
     });
   }
 }
+
