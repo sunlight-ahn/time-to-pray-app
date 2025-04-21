@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:time_to_pray_app/pages/pray_list.dart';
+import 'package:time_to_pray_app/pages/pray_list2_page.dart';
+import 'controllers/main_navigation_controller.dart';
+import 'pages/home_page.dart';
 import 'pages/search_page.dart';
+import 'pages/pray_list_page.dart';
 
 void main() {
   runApp(const TimeToPrayApp());
@@ -13,108 +16,67 @@ class TimeToPrayApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Time to Pray',
+      title: '모두의 가톨릭 기도서',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Colors.orange), // 🔶 오렌지 톤으로 변경
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      initialRoute: '/',
-      getPages: [
-        GetPage(name: '/', page: () => const HomeScreen()),
-        GetPage(name: '/search', page: () => SearchPage()),
-        GetPage(name: '/prayers', page: () => const PrayListPage()), // 🔥 추가
-      ],
+      home: const MainScaffold(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  final List<IconData> _icons = [
-    Icons.home,
-    Icons.search,
-    Icons.favorite,
-    Icons.settings,
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    final selectedIcon = _icons[index];
-
-    if (selectedIcon == Icons.home) {
-      // 홈이 아닐 경우만 이동 (필요 시 조건 추가)
-      if (ModalRoute.of(context)?.settings.name != '/') {
-        Get.offAllNamed('/'); // 모든 라우트 제거하고 홈으로 이동
-      }
-    } else if (selectedIcon == Icons.search) {
-      Get.toNamed('/search');
-    }
-    // 추후 favorite, settings도 여기에 추가 가능
-  }
+class MainScaffold extends StatelessWidget {
+  const MainScaffold({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = Colors.orange.shade400;
+    final MainNavigationController navController =
+        Get.put(MainNavigationController());
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title:
-            const Text('기도의 시간', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: themeColor,
-        leading: const Icon(Icons.home, color: Colors.white),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: Icon(Icons.menu, color: Colors.white),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          elevation: 3,
-          margin: const EdgeInsets.all(24),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Text(
-              '오늘도 기도와 함께 시작해요 🙏',
-              style: TextStyle(fontSize: 20, color: Colors.grey[800]),
+    final pages = [
+      const HomePage(),
+      SearchPage(),
+      PrayListPage(),
+      PrayList2Page(),
+    ];
+
+    return Obx(() {
+      final currentIndex = navController.currentIndex.value;
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          title: const Text('모두의 가톨릭 기도서',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          backgroundColor: Colors.orange.shade400,
+          leading: const Icon(Icons.home, color: Colors.white),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: Icon(Icons.menu, color: Colors.white),
             ),
-          ),
+          ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: _icons
-            .map((icon) => BottomNavigationBarItem(
-                  icon: Icon(icon),
-                  label: '',
-                ))
-            .toList(),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: themeColor,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        elevation: 8,
-      ),
-    );
+        body: IndexedStack(
+          index: currentIndex,
+          children: pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: navController.changeTab,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: ''),
+          ],
+          selectedItemColor: Colors.orange.shade400,
+          unselectedItemColor: Colors.grey,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+        ),
+      );
+    });
   }
 }
