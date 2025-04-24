@@ -1,53 +1,169 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:time_to_pray_app/components/getx_listener.dart';
+import 'package:time_to_pray_app/controllers/authentication_controller.dart';
+import 'package:time_to_pray_app/controllers/data_load.controller.dart';
+import 'package:time_to_pray_app/controllers/pray_search_controller.dart';
+import 'package:time_to_pray_app/controllers/splash_controller.dart';
+import 'package:time_to_pray_app/models/enum/step_type.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends GetView<SplashController> {
   const SplashPage({super.key});
 
-  @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF53B175),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/book.png', // 이미지 경로 확인 필요
-              width: 150,
-              height: 150,
+        child: GetxListener<bool>(
+          listen: (bool isLogined) {
+            if (isLogined) {
+              Get.offNamed('/home');
+            } else {
+              Get.offNamed('/login');
+            }
+          },
+          stream: Get.find<DataLoadController>()
+              .isDataLoad, //Get.find<AuthenticationController>().isLogined,
+          child: GetxListener<bool>(
+            listen: (bool value) {
+              if (value) {
+                controller.loadStep(StepType.authCheck);
+              }
+            },
+            stream: Get.find<DataLoadController>().isDataLoad,
+            child: GetxListener<StepType>(
+              initCall: () {
+                controller.loadStep(StepType.dataLoad);
+              },
+              listen: (StepType? value) {
+                if (value == null) return;
+                switch (value) {
+                  case StepType.init:
+                  case StepType.dataLoad:
+                    print('dataLoad..');
+                    Get.find<DataLoadController>().loadData();
+                    break;
+                  case StepType.authCheck:
+                    print('authCheck...');
+                    //Get.find<AuthenticationController>().authCheck();
+                    break;
+                }
+              },
+              stream: controller.loadStep,
+              // child: Obx(
+              //   () {
+              //     return Text(
+              //       '${controller.loadStep.value.name}중 입니다.',
+              //       style: const TextStyle(color: Colors.white),
+              //     );
+              //   },
+              // ),
+              child: _SplashView(),
             ),
-            //const SizedBox(height: 10),
-            const Text(
-              '모두의 가톨릭 기도서',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Gilroy-Medium',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                letterSpacing: 3,
-              ),
-//               textAlign: TextAlign.center,
-//               style: TextStyle(
-//                 color: Colors.white,
-//                 fontSize: 14,
-//                 fontFamily: 'Gilroy-Medium',
-//                 fontWeight: FontWeight.w400,
-//                 height: 1.29,
-//                 letterSpacing: 5.50,
-//               ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
+
+class _SplashView extends GetView<SplashController> {
+  const _SplashView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 150,
+                height: 150,
+                child: Image.asset(
+                  'assets/images/book.png',
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                '모두의 가톨릭 기도서',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Gilroy-Medium',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// child: GetxListener<StepType>(
+        //   initCall: () {
+        //     controller.loadStep(StepType.dataLoad);
+        //   },
+        //   listen: (StepType? value) {
+        //     if (value == null) return;
+        //     switch (value) {
+        //       case StepType.init:
+        //       case StepType.dataLoad:
+        //         print('dataLoad..');
+        //         Get.find<DataLoadController>().loadData();
+        //         break;
+        //       case StepType.authCheck:
+        //         print('authCheck..');
+        //         break;
+        //     }
+        //     if (Get.find<DataLoadController>().isDataLoad.value) {
+        //       print('go Home......');
+        //       Get.offNamed('/home');
+        //     }
+        //   },
+        //   stream: controller.loadStep,
+        //   child: Obx(() {
+        //     return Text(
+        //       "${controller.loadStep.value.name}중입니다.",
+        //       style: const TextStyle(color: Colors.white),
+        //     );
+        //   }),
+        // ),
+        // child: Obx(
+        //   () => Text(
+        //     "${controller.loadStep.value.name}로딩중입니다.",
+        //     style: const TextStyle(color: Colors.white),
+        //   ),
+        // ),
+        // child: Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Image.asset(
+        //       'assets/images/book.png', // 이미지 경로 확인 필요
+        //       width: 150,
+        //       height: 150,
+        //     ),
+        //     //const SizedBox(height: 10),
+        //     const Text(
+        //       '모두의 가톨릭 기도서',
+        //       textAlign: TextAlign.center,
+        //       style: TextStyle(
+        //         color: Colors.white,
+        //         fontFamily: 'Gilroy-Medium',
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.w400,
+        //         letterSpacing: 3,
+        //       ),
+        //     ),
+        //     const SizedBox(height: 15),
+        //   ],
+        // ),
 
 // import 'package:flutter/material.dart';
 

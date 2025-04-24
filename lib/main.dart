@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:time_to_pray_app/app.dart';
+import 'package:time_to_pray_app/controllers/authentication_controller.dart';
+import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
+import 'package:time_to_pray_app/controllers/data_load.controller.dart';
 import 'package:time_to_pray_app/controllers/splash_controller.dart';
 import 'package:time_to_pray_app/firebase_options.dart';
+import 'package:time_to_pray_app/root.dart';
 import 'controllers/main_navigation_controller.dart';
 import 'pages/home_page.dart';
 import 'pages/search_page.dart';
@@ -18,7 +22,7 @@ void main() async {
   prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); 
+  );
 
   runApp(const TimeToPrayApp());
 }
@@ -37,12 +41,16 @@ class TimeToPrayApp extends StatelessWidget {
       initialBinding: BindingsBuilder(() {
         Get.put(MainNavigationController());
         Get.put(SplashController());
+        Get.put(DataLoadController());
+        Get.put(AuthenticationController());
+        Get.put(BottomNavController());
       }),
       initialRoute: '/',
       getPages: [
         //GetPage(name: '/', page: () => const MainScaffold()),
         GetPage(name: '/', page: () => const App()),
-        GetPage(name: '/home', page: () => const HomePage()),
+        //GetPage(name: '/home', page: () => const HomePage()),
+        GetPage(name: '/home', page: () => const Root()),
         GetPage(name: '/search', page: () => SearchPage()),
         GetPage(name: '/prayList', page: () => PrayListPage()),
         GetPage(name: '/prayList2', page: () => PrayList2Page()),
@@ -51,8 +59,8 @@ class TimeToPrayApp extends StatelessWidget {
   }
 }
 
-class MainScaffold extends StatelessWidget {
-  const MainScaffold({super.key});
+class MainScaffolds extends StatelessWidget {
+  const MainScaffolds({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,4 +109,3 @@ class MainScaffold extends StatelessWidget {
     });
   }
 }
-

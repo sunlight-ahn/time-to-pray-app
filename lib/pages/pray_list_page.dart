@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
 import '../models/prayer.dart';
 import '../repository/test_pray_repository.dart';
 import '../controllers/pray_search_controller.dart';
@@ -35,28 +36,45 @@ class _PrayListPageState extends State<PrayListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final focusedId = _searchController.focusedPrayerId.value;
-      if (focusedId != null && focusedId != _expandedId) {
-        _expandedId = focusedId;
-        _searchController.clearFocusedPrayerId();
-        _logger.i('Obx - set _expandedId to $focusedId');
-      }
-
-      return ListView.separated(
-        padding:
-            const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
-        itemCount: _prayers.length,
-        separatorBuilder: (context, index) => const Divider(
-          color: Color(0xFFDDDDDD),
-          height: 1,
-          thickness: 1,
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40),
+        child: AppBar(
+          backgroundColor: const Color(0xFF53B175), //Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            //onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              //Get.find<MainNavigationController>().changeTab(0);
+              Get.find<BottomNavController>().changeBottomNav(0);
+            },
+          ),
         ),
-        itemBuilder: (context, index) {
-          return _prayerItem(_prayers[index]);
-        },
-      );
-    });
+      ),
+      body: Obx(() {
+        final focusedId = _searchController.focusedPrayerId.value;
+        if (focusedId != null && focusedId != _expandedId) {
+          _expandedId = focusedId;
+          _searchController.clearFocusedPrayerId();
+          _logger.i('Obx - set _expandedId to $focusedId');
+        }
+
+        return ListView.separated(
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
+          itemCount: _prayers.length,
+          separatorBuilder: (context, index) => const Divider(
+            color: Color(0xFFDDDDDD),
+            height: 1,
+            thickness: 1,
+          ),
+          itemBuilder: (context, index) {
+            return _prayerItem(_prayers[index]);
+          },
+        );
+      }),
+    );
   }
 
   Widget _prayerItem(Prayer prayer) {
