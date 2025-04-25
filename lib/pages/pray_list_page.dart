@@ -17,6 +17,7 @@ class _PrayListPageState extends State<PrayListPage> {
   final TestPrayRepository _repository = TestPrayRepository();
   final PraySearchController _searchController = Get.find();
   final Logger _logger = Logger();
+  final TextEditingController _searchInputController = TextEditingController();
 
   List<Prayer> _prayers = [];
   int? _expandedId;
@@ -52,28 +53,88 @@ class _PrayListPageState extends State<PrayListPage> {
           ),
         ),
       ),
-      body: Obx(() {
-        final focusedId = _searchController.focusedPrayerId.value;
-        if (focusedId != null && focusedId != _expandedId) {
-          _expandedId = focusedId;
-          _searchController.clearFocusedPrayerId();
-          _logger.i('Obx - set _expandedId to $focusedId');
-        }
-
-        return ListView.separated(
-          padding:
-              const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
-          itemCount: _prayers.length,
-          separatorBuilder: (context, index) => const Divider(
-            color: Color(0xFFDDDDDD),
-            height: 1,
-            thickness: 1,
+      body: Column(
+        children: [
+          // 🔍 검색창
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              height: 51.57,
+              decoration: ShapeDecoration(
+                color: const Color(0xFFF1F2F2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, color: Color(0xFF53B175)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchInputController,
+                      decoration: const InputDecoration(
+                        hintText: '기도문 검색',
+                        border: InputBorder.none,
+                      ),
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (value) => () {}, //_onSearch(),
+                    ),
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                      onPressed: () {} //_onSearch,
+                      ),
+                ],
+              ),
+            ),
           ),
-          itemBuilder: (context, index) {
-            return _prayerItem(_prayers[index]);
-          },
-        );
-      }),
+          const SizedBox(height: 8), // 간격 추가
+          // 리스트 영역
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: 24,
+              ),
+              itemCount: _prayers.length,
+              separatorBuilder: (context, index) => const Divider(
+                color: Colors.blueGrey, // Color(0xFFDDDDDD),
+                height: 1,
+                thickness: 1,
+              ),
+              itemBuilder: (context, index) {
+                return _prayerItem(_prayers[index]);
+              },
+            ),
+          ),
+        ],
+        // child: Obx(() {
+        //   final focusedId = _searchController.focusedPrayerId.value;
+        //   if (focusedId != null && focusedId != _expandedId) {
+        //     _expandedId = focusedId;
+        //     _searchController.clearFocusedPrayerId();
+        //     _logger.i('Obx - set _expandedId to $focusedId');
+        //   }
+
+        //   return ListView.separated(
+        //     padding:
+        //         const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
+        //     itemCount: _prayers.length,
+        //     separatorBuilder: (context, index) => const Divider(
+        //       color: Color(0xFFDDDDDD),
+        //       height: 1,
+        //       thickness: 1,
+        //     ),
+        //     itemBuilder: (context, index) {
+        //       return _prayerItem(_prayers[index]);
+        //     },
+        //   );
+        // }),
+      ),
     );
   }
 
@@ -94,6 +155,11 @@ class _PrayListPageState extends State<PrayListPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // 펼치기 아이콘
+                Icon(
+                  isExpanded ? Icons.expand_less : Icons.expand_more,
+                  color: const Color(0xFF53B175), //Colors.orange,
+                ),
                 Expanded(
                   child: Text(
                     prayer.title,
@@ -103,9 +169,13 @@ class _PrayListPageState extends State<PrayListPage> {
                     ),
                   ),
                 ),
-                Icon(
-                  isExpanded ? Icons.expand_less : Icons.expand_more,
-                  color: Colors.orange,
+                // ⭐ 즐겨찾기 아이콘
+                IconButton(
+                  icon: Icon(
+                    prayer.isFavorite ? Icons.star : Icons.star_border,
+                    color: Colors.orangeAccent,
+                  ),
+                  onPressed: () => _toggleFavorite(prayer),
                 ),
               ],
             ),
@@ -122,10 +192,17 @@ class _PrayListPageState extends State<PrayListPage> {
             crossFadeState: isExpanded
                 ? CrossFadeState.showSecond
                 : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 200),
           )
         ],
       ),
     );
+  }
+
+  void _toggleFavorite(Prayer prayer) {
+    setState(() {
+      //prayer.isFavorite = !prayer.isFavorite;
+    });
+    _logger.i('${prayer.title} 즐겨찾기 상태: ${prayer.isFavorite}');
   }
 }

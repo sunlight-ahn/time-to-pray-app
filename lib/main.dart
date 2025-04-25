@@ -35,7 +35,9 @@ class TimeToPrayApp extends StatelessWidget {
     return GetMaterialApp(
       title: '모두의 가톨릭 기도서',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF53B175),
+        ), //Colors.orange
         useMaterial3: true,
       ),
       initialBinding: BindingsBuilder(() {
