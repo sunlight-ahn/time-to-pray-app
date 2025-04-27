@@ -53,7 +53,7 @@ class TestPrayRepository {
       ),
       Prayer(
         id: 4,
-        title: 'aaaaaaaaa',
+        title: '영광송',
         content: '밑줄 부분에서 고개를 숙이며\n'
             '영광이 성부와 성자와 성령께\n'
             '처음과 같이\n'

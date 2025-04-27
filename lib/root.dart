@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
 import 'package:time_to_pray_app/pages/home_page.dart';
 import 'package:time_to_pray_app/pages/pray_list_page.dart';
 import 'package:time_to_pray_app/pages/search_page.dart';
+import 'package:time_to_pray_app/repository/pray_repository.dart'; // 추가 필요
 
 class Root extends GetView<BottomNavController> {
   const Root({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final PrayRepository prayRepository = PrayRepository(); // 여기서 인스턴스 생성
+
     return Scaffold(
       body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: controller.tabController,
-          children: [
-            HomePage(),
-            SearchPage(),
-            PrayListPage(),
-            Center(child: Text("기타")),
-          ]),
+        physics: const NeverScrollableScrollPhysics(),
+        controller: controller.tabController,
+        children: [
+          HomePage(),
+          PrayListPage(),
+          SearchPage(),
+          const Center(child: Text("기타")),
+        ],
+      ),
       bottomNavigationBar: Obx(
         () => BottomNavigationBar(
           currentIndex: controller.menuIndex.value,
@@ -31,12 +34,31 @@ class Root extends GetView<BottomNavController> {
           selectedFontSize: 11.0,
           unselectedFontSize: 11.0,
           onTap: controller.changeBottomNav,
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.library_books), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: ''),
             BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: ''),
           ],
+        ),
+      ),
+      floatingActionButton: Visibility(
+        visible: true,
+        child: FloatingActionButton(
+          backgroundColor: const Color(0xFF53B175),
+          child: const Icon(Icons.add, color: Colors.white),
+          onPressed: () async {
+            await prayRepository.initDB(); // DB 연결
+            await prayRepository.clearPrayers(); //테이블 초기화
+            await prayRepository.initData(); // 더미 데이터 삽입
+            Get.snackbar(
+              '초기화 완료',
+              '더미 데이터가 저장되었습니다.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.black87,
+              colorText: Colors.white,
+            );
+          },
         ),
       ),
     );

@@ -1,27 +1,65 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:time_to_pray_app/models/prayer.dart';
 import 'package:time_to_pray_app/repository/pray_repository.dart';
+import 'package:logger/logger.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // ★ 추가
 
 void main() {
+  sqfliteFfiInit(); // ★ 필수 초기화
+  databaseFactory = databaseFactoryFfi; // ★ 필수 설정
+
   late PrayRepository repository;
+  final logger = Logger();
 
   setUp(() async {
     repository = PrayRepository();
-    await repository.initDB();
+    await repository.initDB(); //DB 연결
+    await repository.clearPrayers(); //데이터 초기화
+    print('setUp - 각 테스트 실행 전');
   });
 
   tearDown(() async {
+    await repository.clearPrayers();
     await repository.close();
+    print('tearDown - 각 테스트 실행 후');
   });
 
-  // test('keyword로 기도문 검색', () async {
-  //   List<Prayer> results = await repository.searchPrayers('평화');
-  //   expect(results.isNotEmpty, true);
-  //   expect(results.first.title, contains('평화'));
-  // });
+  test('더미데이터 초기화 후 결과는 비어있어야한다.', () async {
+    List<Prayer> results = await repository.getPrayers();
+    expect(results, isEmpty);
+    print('getPrayers result : $results');
+  });
 
-  // test('없는 키워드 검색 결과 없음', () async {
-  //   List<Prayer> results = await repository.searchPrayers('없는제목');
-  //   expect(results.isEmpty, true);
-  // });
+  test('더미데이터 등록 후 결과값이 있어야 한다.', () async {
+    await repository.initData(); // await 추가 (비동기)
+    List<Prayer> results = await repository.getPrayers();
+    expect(results, isNotEmpty);
+    //expect(results.first.title, contains('주님'));
+  });
+
+  test('전체 기도문을 SqlLite로 조회시 리스트가 존재한다.', () async {
+    await repository.initData(); // await 추가 (비동기)
+    List<Prayer> results = await repository.getPrayers();
+    expect(results.isNotEmpty, isTrue);
+    if (results.isNotEmpty) {
+      // 📝 Logger 결과 출력
+      for (var prayer in results) {
+        logger.i(prayer);
+      }
+      ////logger.i('기도문: ID=${prayer.id}, Title=${prayer.title}, Contents=${prayer.content}, IsFavorite=${prayer.isFavorite}');
+    }
+  });
+
+  test('기도문 저장 테스트', () async {
+    await repository.insertPrayer(Prayer(
+      id: 0,
+      title: '테스트 기도',
+      content: '테스트 기도 내용입니다.',
+      isFavorite: false,
+    ));
+
+    final prayers = await repository.getPrayers();
+    expect(prayers.length, equals(1));
+    expect(prayers.first.title, equals('테스트 기도'));
+  });
 }

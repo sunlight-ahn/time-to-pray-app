@@ -13,7 +13,6 @@ import 'controllers/main_navigation_controller.dart';
 import 'pages/home_page.dart';
 import 'pages/search_page.dart';
 import 'pages/pray_list_page.dart';
-import 'pages/pray_list2_page.dart';
 
 late SharedPreferences prefs;
 void main() async {
@@ -55,7 +54,6 @@ class TimeToPrayApp extends StatelessWidget {
         GetPage(name: '/home', page: () => const Root()),
         GetPage(name: '/search', page: () => SearchPage()),
         GetPage(name: '/prayList', page: () => PrayListPage()),
-        GetPage(name: '/prayList2', page: () => PrayList2Page()),
       ],
     );
   }
@@ -72,7 +70,6 @@ class MainScaffolds extends StatelessWidget {
       const HomePage(),
       SearchPage(),
       PrayListPage(),
-      PrayList2Page(),
     ];
 
     return Obx(() {
