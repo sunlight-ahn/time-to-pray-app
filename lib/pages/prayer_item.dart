@@ -88,6 +88,9 @@ class PrayerItem extends StatelessWidget {
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
+              firstCurve: Curves.easeInOut, //  첫 화면 닫힘 애니메이션
+              secondCurve: Curves.easeInOut, //  열릴 때 애니메이션
+              sizeCurve: Curves.easeInOut, //  크기 늘어나는 애니메이션
             ),
           ],
         ),

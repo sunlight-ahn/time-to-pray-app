@@ -8,6 +8,7 @@ import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
 import 'package:time_to_pray_app/controllers/data_load.controller.dart';
 import 'package:time_to_pray_app/controllers/splash_controller.dart';
 import 'package:time_to_pray_app/firebase_options.dart';
+import 'package:time_to_pray_app/pages/favorite_list_page.dart';
 import 'package:time_to_pray_app/root.dart';
 import 'controllers/main_navigation_controller.dart';
 import 'pages/home_page.dart';
@@ -52,7 +53,7 @@ class TimeToPrayApp extends StatelessWidget {
         GetPage(name: '/', page: () => const App()),
         //GetPage(name: '/home', page: () => const HomePage()),
         GetPage(name: '/home', page: () => const Root()),
-        GetPage(name: '/search', page: () => SearchPage()),
+        GetPage(name: '/favoriteList', page: () => FavoriteListPage()),
         GetPage(name: '/prayList', page: () => PrayListPage()),
       ],
     );
@@ -90,20 +91,20 @@ class MainScaffolds extends StatelessWidget {
           ],
         ),
         body: pages[currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: navController.changeTab,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: ''),
-          ],
-          selectedItemColor: Colors.orange.shade400,
-          unselectedItemColor: Colors.grey,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-        ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   currentIndex: currentIndex,
+        //   onTap: navController.changeTab,
+        //   items: const [
+        //     BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+        //     BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
+        //     BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
+        //     BottomNavigationBarItem(icon: Icon(Icons.ac_unit), label: ''),
+        //   ],
+        //   selectedItemColor: Colors.orange.shade400,
+        //   unselectedItemColor: Colors.grey,
+        //   showSelectedLabels: false,
+        //   showUnselectedLabels: false,
+        // ),
       );
     });
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
+import 'package:time_to_pray_app/pages/favorite_list_page.dart';
 import 'package:time_to_pray_app/pages/home_page.dart';
 import 'package:time_to_pray_app/pages/pray_list_page.dart';
+import 'package:time_to_pray_app/pages/pray_rosary_page.dart';
 import 'package:time_to_pray_app/pages/search_page.dart';
 import 'package:time_to_pray_app/repository/pray_repository.dart'; // 추가 필요
 
@@ -20,8 +22,10 @@ class Root extends GetView<BottomNavController> {
         children: [
           HomePage(),
           PrayListPage(),
-          SearchPage(),
-          const Center(child: Text("기타")),
+          //SearchPage(),
+          FavoriteListPage(),
+          //const Center(child: Text("기타")),
+          ParagraphReaderPage(),
         ],
       ),
       bottomNavigationBar: Obx(
