@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/pray_reader_controller.dart';
 import '../controllers/bottom_nav_controller.dart';
+import '../models/enum/rosary_type.dart';
 
 class ParagraphReaderPage extends StatefulWidget {
   const ParagraphReaderPage({super.key});
@@ -17,13 +18,40 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
   bool _isPlaying = false;
   int _currentIndex = 0;
   Timer? _timer;
+  List<int> _currentPrayerSequence = [];
+  int _currentPrayerIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller.loadPrayer(7); // 기본값으로 1번 기도문을 로드
-    //초기 화면이 필요함. 초기화면에서는 묵주기도 유형을 선택하게 됨
-    //요일에 맞는 신비를 추천하고 사용자가 선택할 수 있게 UI가 구성되어야 함.
+    // 초기 화면에서는 묵주기도 유형을 선택하게 됨
+    setRosaryPlay(RosaryType.joyful); // 환희의 신비 시작
+  }
+
+  void setRosaryPlay(RosaryType rosaryType) {
+    switch (rosaryType) {
+      case RosaryType.joyful:
+        _currentPrayerSequence = [7, 8]; // 예시 값
+        break;
+      case RosaryType.luminous:
+        _currentPrayerSequence = [6, 7]; // 예시 값
+        break;
+      case RosaryType.sorrowful:
+        _currentPrayerSequence = [5, 6]; // 예시 값
+        break;
+      case RosaryType.glorious:
+        _currentPrayerSequence = [6, 8]; // 예시 값
+        break;
+    }
+    _currentPrayerIndex = 0;
+    _loadNextPrayer();
+  }
+
+  void _loadNextPrayer() {
+    if (_currentPrayerIndex < _currentPrayerSequence.length) {
+      _controller.loadPrayer(_currentPrayerSequence[_currentPrayerIndex]);
+      _currentPrayerIndex++;
+    }
   }
 
   @override
@@ -40,7 +68,11 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
   void _animateNextChar() {
     if (_controller.currentPrayer.value == null ||
         _currentIndex >= _controller.currentPrayer.value!.content.length - 1) {
-      _stopAnimation();
+      _loadNextPrayer();
+      _currentIndex = 0;
+      if (_isPlaying) {
+        _animateNextChar();
+      }
       return;
     }
 

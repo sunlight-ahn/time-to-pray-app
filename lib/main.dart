@@ -84,6 +84,7 @@ class MainScaffolds extends StatelessWidget {
           backgroundColor: Colors.orange.shade400,
           leading: const Icon(Icons.home, color: Colors.white),
           actions: const [
+            
             Padding(
               padding: EdgeInsets.only(right: 16.0),
               child: Icon(Icons.menu, color: Colors.white),
