@@ -51,6 +51,8 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
     if (_currentPrayerIndex < _currentPrayerSequence.length) {
       _controller.loadPrayer(_currentPrayerSequence[_currentPrayerIndex]);
       _currentPrayerIndex++;
+    } else {
+      _stopAnimation();
     }
   }
 
