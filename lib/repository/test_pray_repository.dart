@@ -18,6 +18,11 @@ class TestPrayRepository {
             '악에서 구하소서.\n'
             '아멘.',
         isFavorite: false,
+        prayType: '주요기도',
+        prayKey: '주님의기도',
+        version: '1.0',
+        registerDate: DateTime.now(),
+        modifiedDate: DateTime.now(),
       ),
       Prayer(
         id: 2,
@@ -30,6 +35,11 @@ class TestPrayRepository {
             '저희 죄인을 위하여 빌어주소서.\n'
             '아멘.',
         isFavorite: false,
+        prayType: '주요기도',
+        prayKey: '성모송',
+        version: '1.0',
+        registerDate: DateTime.now(),
+        modifiedDate: DateTime.now(),
       ),
       Prayer(
         id: 3,
@@ -50,6 +60,11 @@ class TestPrayRepository {
             '영원한 삶을 믿나이다.\n'
             '아멘.',
         isFavorite: false,
+        prayType: '주요기도',
+        prayKey: '사도신경',
+        version: '1.0',
+        registerDate: DateTime.now(),
+        modifiedDate: DateTime.now(),
       ),
       Prayer(
         id: 4,
@@ -60,6 +75,11 @@ class TestPrayRepository {
             '이제와 항상 영원히.\n'
             '아멘.',
         isFavorite: true,
+        prayType: '주요기도',
+        prayKey: '영광송',
+        version: '1.0',
+        registerDate: DateTime.now(),
+        modifiedDate: DateTime.now(),
       ),
     ];
 

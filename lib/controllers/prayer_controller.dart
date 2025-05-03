@@ -6,7 +6,8 @@ class PrayerController extends GetxController {
   late RxBool isFavorite;
 
   PrayerController({required this.prayer}) {
-    isFavorite = prayer.isFavorite.obs;
+    isFavorite = RxBool(prayer.isFavorite);
+    //    isFavorite = prayer.isFavorite.obs;
   }
 
   void toggleFavorite() {

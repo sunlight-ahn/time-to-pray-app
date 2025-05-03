@@ -3,6 +3,7 @@ import 'package:time_to_pray_app/models/prayer.dart';
 import 'package:time_to_pray_app/repository/pray_repository.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // ★ 추가
+import 'package:time_to_pray_app/models/dummy_prayer.dart';
 
 void main() {
   sqfliteFfiInit(); // ★ 필수 초기화
@@ -56,10 +57,22 @@ void main() {
       title: '테스트 기도',
       content: '테스트 기도 내용입니다.',
       isFavorite: false,
+      prayType: '테스트',
+      prayKey: 'test_prayer',
+      version: '1.0',
+      registerDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
     ));
 
     final prayers = await repository.getPrayers();
     expect(prayers.length, equals(1));
     expect(prayers.first.title, equals('테스트 기도'));
+  });
+
+  test('searchPrayers should return matching prayers', () async {
+    await repository.initData();
+    final prayers = await repository.getPrayersByPrayKey('주님의기도');
+    expect(prayers.length, 1);
+    expect(prayers[0].title, '주님의 기도');
   });
 }

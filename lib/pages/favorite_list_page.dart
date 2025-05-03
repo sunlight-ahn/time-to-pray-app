@@ -28,7 +28,7 @@ class _FavoriteListPage extends State<FavoriteListPage> {
     _loadPrayers();
   }
 
-  Future<void> _loadPrayers({String? keyword}) async {
+  Future<void> _loadPrayers() async {
     final results = await _repository.getFavoritePrayers();
     setState(() {
       _prayers =
