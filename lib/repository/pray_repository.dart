@@ -97,6 +97,7 @@ class PrayRepository {
         .toList();
   }
 
+  //기도문 키로 조회
   Future<List<Prayer>> getPrayersByPrayKey(String prayKey) async {
     if (_db == null) {
       await initDB();

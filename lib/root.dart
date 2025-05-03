@@ -46,25 +46,7 @@ class Root extends GetView<BottomNavController> {
           ],
         ),
       ),
-      floatingActionButton: Visibility(
-        visible: true,
-        child: FloatingActionButton(
-          backgroundColor: const Color(0xFF53B175),
-          child: const Icon(Icons.add, color: Colors.white),
-          onPressed: () async {
-            await prayRepository.initDB(); // DB 연결
-            await prayRepository.clearPrayers(); //테이블 초기화
-            await prayRepository.initData(); // 더미 데이터 삽입
-            Get.snackbar(
-              '초기화 완료',
-              '더미 데이터가 저장되었습니다.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.black87,
-              colorText: Colors.white,
-            );
-          },
-        ),
-      ),
+      
     );
   }
 }

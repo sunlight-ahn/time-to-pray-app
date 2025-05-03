@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:time_to_pray_app/controllers/bottom_nav_controller.dart';
 import 'package:time_to_pray_app/controllers/prayer_controller.dart';
-import 'package:time_to_pray_app/models/prayer.dart';
-import 'package:time_to_pray_app/pages/prayer_item.dart';
-import 'package:time_to_pray_app/repository/test_pray_repository.dart';
+import 'package:time_to_pray_app/pages/favorite_pray_item.dart';
 import 'package:time_to_pray_app/repository/pray_repository.dart';
 
 class FavoriteListPage extends StatefulWidget {
@@ -46,6 +44,11 @@ class _FavoriteListPage extends State<FavoriteListPage> {
     });
   }
 
+  void _handleCheck(int id) {
+    _logger.i('기도 완료: $id');
+    // TODO: 기도 완료 처리 로직 추가
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +59,7 @@ class _FavoriteListPage extends State<FavoriteListPage> {
             child: _prayers.isEmpty
                 ? const Center(
                     child: Text(
-                      '검색 결과가 없습니다.',
+                      '즐겨찾는 기도문이 없습니다.',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   )
@@ -71,7 +74,7 @@ class _FavoriteListPage extends State<FavoriteListPage> {
                     ),
                     itemBuilder: (context, index) {
                       final prayerController = _prayers[index];
-                      return PrayerItem(
+                      return FavoritePrayItem(
                         controller: prayerController,
                         isExpanded: _expandedId == prayerController.prayer.id,
                         onExpandToggle: () =>
@@ -81,7 +84,9 @@ class _FavoriteListPage extends State<FavoriteListPage> {
                             prayerController.prayer.id,
                             prayerController.isFavorite.value,
                           );
+                          _loadPrayers(); // 목록 새로고침
                         },
+                        onCheck: () => _handleCheck(prayerController.prayer.id),
                       );
                     },
                   ),

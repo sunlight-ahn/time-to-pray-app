@@ -23,4 +23,28 @@ class PrayReaderController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> loadPrayerByKey(String prayKey) async {
+    try {
+      isLoading.value = true;
+      final prayers = await _repository.getPrayersByPrayKey(prayKey);
+      if (prayers.isNotEmpty) {
+        currentPrayer.value = prayers.first;
+      } else {
+        Get.snackbar(
+          '오류',
+          '기도문을 찾을 수 없습니다.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        '오류',
+        '기도문을 불러오는데 실패했습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

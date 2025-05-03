@@ -18,8 +18,9 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
   bool _isPlaying = false;
   int _currentIndex = 0;
   Timer? _timer;
-  List<int> _currentPrayerSequence = [];
+  List<String> _currentPrayerSequence = [];
   int _currentPrayerIndex = 0;
+  RosaryType? _currentRosaryType;
 
   @override
   void initState() {
@@ -29,18 +30,19 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
   }
 
   void setRosaryPlay(RosaryType rosaryType) {
+    _currentRosaryType = rosaryType;
     switch (rosaryType) {
       case RosaryType.joyful:
-        _currentPrayerSequence = [9, 10]; // 예시 값
+        _currentPrayerSequence = ['사도신경', '주님의기도'];
         break;
       case RosaryType.luminous:
-        _currentPrayerSequence = [11, 12]; // 예시 값
+        _currentPrayerSequence = ['사도신경', '주님의기도'];
         break;
       case RosaryType.sorrowful:
-        _currentPrayerSequence = [12, 110]; // 예시 값
+        _currentPrayerSequence = ['사도신경', '주님의기도'];
         break;
       case RosaryType.glorious:
-        _currentPrayerSequence = [9, 11]; // 예시 값
+        _currentPrayerSequence = ['사도신경', '주님의기도'];
         break;
     }
     _currentPrayerIndex = 0;
@@ -49,7 +51,7 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
 
   void _loadNextPrayer() {
     if (_currentPrayerIndex < _currentPrayerSequence.length) {
-      _controller.loadPrayer(_currentPrayerSequence[_currentPrayerIndex]);
+      _controller.loadPrayerByKey(_currentPrayerSequence[_currentPrayerIndex]);
       _currentPrayerIndex++;
     } else {
       _stopAnimation();
@@ -158,39 +160,32 @@ _buildPrayerContent(): 기도문 내용 표시
         if (_controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (_currentPrayerSequence.isEmpty) {
-          return Column(
-            children: [
-              _buildRosaryTypeTabs(),
-              Expanded(
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/rosary.png',
-                    width: 350,
-                    height: 400,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-        if (_controller.currentPrayer.value == null) {
-          return const Center(child: Text('기도문을 찾을 수 없습니다.'));
-        }
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               _buildRosaryTypeTabs(),
               const SizedBox(height: 20),
-              _buildSelectedRosaryTitle(),
-              const SizedBox(height: 20),
-              _buildControlPanel(),
-              const SizedBox(height: 20),
-              _buildPrayerTitle(),
-              const SizedBox(height: 10),
-              _buildPrayerContent(),
+              if (_currentPrayerSequence.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/rosary.png',
+                      width: 350,
+                      height: 400,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                )
+              else ...[
+                _buildSelectedRosaryTitle(),
+                const SizedBox(height: 20),
+                _buildControlPanel(),
+                const SizedBox(height: 20),
+                _buildPrayerTitle(),
+                const SizedBox(height: 10),
+                _buildPrayerContent(),
+              ],
             ],
           ),
         );
@@ -283,8 +278,7 @@ _buildPrayerContent(): 기도문 내용 표시
   }
 
   Widget _buildRosaryButton(RosaryType type, String title) {
-    final isSelected = _currentPrayerSequence.isNotEmpty &&
-        _currentPrayerSequence[0] == _getFirstPrayerId(type);
+    final isSelected = _currentRosaryType == type;
 
     return ElevatedButton(
       onPressed: () {
@@ -321,10 +315,17 @@ _buildPrayerContent(): 기도문 내용 표시
   }
 
   String _getSelectedRosaryTitle() {
-    if (_currentPrayerSequence.isEmpty) return '기도준비';
-    if (_currentPrayerSequence[0] == 9) return '환희의 신비';
-    if (_currentPrayerSequence[0] == 11) return '빛의 신비';
-    if (_currentPrayerSequence[0] == 12) return '고통의 신비';
-    return '영광의 신비';
+    if (_currentRosaryType == null) return '기도준비';
+
+    switch (_currentRosaryType!) {
+      case RosaryType.joyful:
+        return '환희의 신비';
+      case RosaryType.luminous:
+        return '빛의 신비';
+      case RosaryType.sorrowful:
+        return '고통의 신비';
+      case RosaryType.glorious:
+        return '영광의 신비';
+    }
   }
 }
