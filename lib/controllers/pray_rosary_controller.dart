@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../models/prayer.dart';
 import '../repository/pray_repository.dart';
 
-class PrayReaderController extends GetxController {
+class PrayRosaryController extends GetxController {
   final PrayRepository _repository = PrayRepository();
   final Rx<Prayer?> currentPrayer = Rx<Prayer?>(null);
   final RxBool isLoading = false.obs;
@@ -24,18 +24,20 @@ class PrayReaderController extends GetxController {
     }
   }
 
-  Future<void> loadPrayerByKey(String prayKey) async {
+  Future<Prayer?> getPrayerByPrayKey(String prayKey) async {
     try {
       isLoading.value = true;
       final prayers = await _repository.getPrayersByPrayKey(prayKey);
       if (prayers.isNotEmpty) {
         currentPrayer.value = prayers.first;
+        return prayers.first;
       } else {
         Get.snackbar(
           '오류',
           '기도문을 찾을 수 없습니다.',
           snackPosition: SnackPosition.BOTTOM,
         );
+        return null;
       }
     } catch (e) {
       Get.snackbar(
@@ -43,6 +45,7 @@ class PrayReaderController extends GetxController {
         '기도문을 불러오는데 실패했습니다.',
         snackPosition: SnackPosition.BOTTOM,
       );
+      return null;
     } finally {
       isLoading.value = false;
     }

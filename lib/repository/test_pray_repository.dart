@@ -21,6 +21,7 @@ class TestPrayRepository {
         prayType: '주요기도',
         prayKey: '주님의기도',
         version: '1.0',
+        isShow: true, // 화면에 표시 여부
         registerDate: DateTime.now(),
         modifiedDate: DateTime.now(),
       ),
@@ -38,6 +39,7 @@ class TestPrayRepository {
         prayType: '주요기도',
         prayKey: '성모송',
         version: '1.0',
+        isShow: true, // 화면에 표시 여부
         registerDate: DateTime.now(),
         modifiedDate: DateTime.now(),
       ),
@@ -63,6 +65,7 @@ class TestPrayRepository {
         prayType: '주요기도',
         prayKey: '사도신경',
         version: '1.0',
+        isShow: true, // 화면에 표시 여부
         registerDate: DateTime.now(),
         modifiedDate: DateTime.now(),
       ),
@@ -78,6 +81,7 @@ class TestPrayRepository {
         prayType: '주요기도',
         prayKey: '영광송',
         version: '1.0',
+        isShow: true, // 화면에 표시 여부
         registerDate: DateTime.now(),
         modifiedDate: DateTime.now(),
       ),

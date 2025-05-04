@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/pray_reader_controller.dart';
+import '../controllers/pray_rosary_controller.dart';
 import '../controllers/bottom_nav_controller.dart';
 import '../models/enum/rosary_type.dart';
+import '../models/prayer.dart';
+import 'rosary_item_page.dart';
+import 'package:logger/logger.dart';
 
 class ParagraphReaderPage extends StatefulWidget {
   const ParagraphReaderPage({super.key});
@@ -13,125 +16,61 @@ class ParagraphReaderPage extends StatefulWidget {
 }
 
 class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
-  final PrayReaderController _controller = Get.find<PrayReaderController>();
-  double _speed = 1.0; // 1.0 ~ 10.0
-  bool _isPlaying = false;
-  int _currentIndex = 0;
-  Timer? _timer;
-  List<String> _currentPrayerSequence = [];
-  int _currentPrayerIndex = 0;
+  final Logger _logger = Logger();
+  final PrayRosaryController _controller = Get.find<PrayRosaryController>();
+  List<String> _currentRosaryItemCodes = []; //묵주기도 신비 유형에 따라 사용할 코드 정의
+  List<Prayer> _currentRosaryPrayItems = []; //선택된 신비내용 5개
+
   RosaryType? _currentRosaryType;
+  bool _showDetailButton = false; //묵주기도 상세 버튼 표시 여부
 
   @override
   void initState() {
     super.initState();
-    // 초기 화면에서는 묵주기도 유형을 선택하게 됨
-    //setRosaryPlay(RosaryType.joyful); // 환희의 신비 시작
   }
 
   void setRosaryPlay(RosaryType rosaryType) {
     _currentRosaryType = rosaryType;
     switch (rosaryType) {
       case RosaryType.joyful:
-        _currentPrayerSequence = ['사도신경', '주님의기도'];
+        _currentRosaryItemCodes = ['환희의신비'];
         break;
       case RosaryType.luminous:
-        _currentPrayerSequence = ['사도신경', '주님의기도'];
+        _currentRosaryItemCodes = ['사도신경', '주님의기도'];
         break;
       case RosaryType.sorrowful:
-        _currentPrayerSequence = ['사도신경', '주님의기도'];
+        _currentRosaryItemCodes = ['사도신경', '주님의기도'];
         break;
       case RosaryType.glorious:
-        _currentPrayerSequence = ['사도신경', '주님의기도'];
+        _currentRosaryItemCodes = ['사도신경', '주님의기도'];
         break;
     }
-    _currentPrayerIndex = 0;
-    _loadNextPrayer();
+    _loadRosaryItems();
   }
 
-  void _loadNextPrayer() {
-    if (_currentPrayerIndex < _currentPrayerSequence.length) {
-      _controller.loadPrayerByKey(_currentPrayerSequence[_currentPrayerIndex]);
-      _currentPrayerIndex++;
-    } else {
-      _stopAnimation();
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _startAnimation() {
-    _isPlaying = true;
-    _animateNextChar();
-  }
-
-  void _animateNextChar() {
-    if (_controller.currentPrayer.value == null ||
-        _currentIndex >= _controller.currentPrayer.value!.content.length - 1) {
-      _loadNextPrayer();
-      _currentIndex = 0;
-      if (_isPlaying) {
-        _animateNextChar();
+  Future<void> _loadRosaryItems() async {
+    _currentRosaryPrayItems = [];
+    for (final code in _currentRosaryItemCodes) {
+      _logger.i('code: $code');
+      final prayer = await _controller.getPrayerByPrayKey(code);
+      if (prayer != null) {
+        _currentRosaryPrayItems.add(prayer);
       }
-      return;
     }
-
-    final currentChar = _controller.currentPrayer.value!.content[_currentIndex];
-    final isWhitespace = currentChar == ' ' || currentChar == '\n';
-    final delay =
-        Duration(milliseconds: isWhitespace ? 300 : (200 ~/ _speed).toInt());
-
-    _timer = Timer(delay, () {
-      if (!_isPlaying) return;
-      setState(() {
-        _currentIndex++;
-      });
-      _animateNextChar();
-    });
-  }
-
-  void _stopAnimation() {
-    _timer?.cancel();
     setState(() {
-      _isPlaying = false;
+      _showDetailButton = true;
     });
   }
 
-  void _togglePlay() {
-    if (_isPlaying) {
-      _stopAnimation();
-    } else {
-      setState(() {
-        _isPlaying = true;
-      });
-      _animateNextChar();
-    }
+  void _showRosaryDetail() {
+    Get.dialog(
+      RosaryItemPage(
+        prayerCodes: _currentRosaryItemCodes,
+        prayers: _currentRosaryPrayItems,
+      ),
+    );
   }
 
-  void _adjustSpeed(bool increase) {
-    setState(() {
-      _speed += increase ? 0.5 : -0.5;
-      if (_speed < 1.0) _speed = 1.0;
-      if (_speed > 10.0) _speed = 10.0;
-    });
-
-    if (_isPlaying) {
-      _stopAnimation();
-      _togglePlay(); // 속도 재반영
-    }
-  }
-
-/*
-_buildRosaryTypeTabs(): 상단의 묵주기도 유형 선택 탭 버튼들
-_buildSelectedRosaryTitle(): 선택된 묵주기도 유형 제목 표시
-_buildControlPanel(): 속도 조절 및 재생/멈춤 컨트롤 패널
-_buildPrayerTitle(): 현재 기도문 제목 표시
-_buildPrayerContent(): 기도문 내용 표시
- */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,40 +95,35 @@ _buildPrayerContent(): 기도문 내용 표시
           ),
         ),
       ),
-      body: Obx(() {
-        if (_controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildRosaryTypeTabs(),
-              const SizedBox(height: 20),
-              if (_currentPrayerSequence.isEmpty)
-                Expanded(
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/rosary.png',
-                      width: 350,
-                      height: 400,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                )
-              else ...[
-                _buildSelectedRosaryTitle(),
-                const SizedBox(height: 20),
-                _buildControlPanel(),
-                const SizedBox(height: 20),
-                _buildPrayerTitle(),
-                const SizedBox(height: 10),
-                _buildPrayerContent(),
-              ],
-            ],
-          ),
-        );
-      }),
+      body: Column(
+        children: [
+          _buildRosaryTypeTabs(),
+          const SizedBox(height: 20),
+          if (_currentRosaryItemCodes.isEmpty)
+            Expanded(
+              child: Center(
+                child: Image.asset(
+                  'assets/images/rosary.png',
+                  width: 350,
+                  height: 400,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            )
+          else ...[
+            _buildSelectedRosaryTitle(),
+            const SizedBox(height: 20),
+            _buildRosaryContent(),
+          ],
+        ],
+      ),
+      floatingActionButton: _showDetailButton
+          ? FloatingActionButton(
+              onPressed: _showRosaryDetail,
+              backgroundColor: const Color(0xFF53B175),
+              child: const Icon(Icons.visibility, color: Colors.white),
+            )
+          : null,
     );
   }
 
@@ -215,64 +149,17 @@ _buildPrayerContent(): 기도문 내용 표시
     );
   }
 
-  Widget _buildControlPanel() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_left),
-          onPressed: () => _adjustSpeed(false),
-        ),
-        Container(
-          width: 50,
-          alignment: Alignment.center,
-          child: Text(
-            _speed.toStringAsFixed(1),
-            style: const TextStyle(fontSize: 10),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.arrow_right),
-          onPressed: () => _adjustSpeed(true),
-        ),
-        const SizedBox(width: 20),
-        ElevatedButton(
-          onPressed: _togglePlay,
-          child: Text(_isPlaying ? '멈춤' : '시작'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPrayerTitle() {
-    return Obx(() => Text(
-          _controller.currentPrayer.value?.title ?? '',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ));
-  }
-
-  Widget _buildPrayerContent() {
+  Widget _buildRosaryContent() {
     return Expanded(
-      child: SingleChildScrollView(
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: _controller.currentPrayer.value!.content
-                    .substring(0, _currentIndex),
-                style: const TextStyle(color: Colors.red, fontSize: 15),
-              ),
-              TextSpan(
-                text: _controller.currentPrayer.value!.content
-                    .substring(_currentIndex),
-                style: const TextStyle(color: Colors.black87, fontSize: 15),
-              ),
-            ],
-          ),
-        ),
+      child: ListView.builder(
+        itemCount: _currentRosaryPrayItems.length,
+        itemBuilder: (context, index) {
+          final prayer = _currentRosaryPrayItems[index];
+          return ListTile(
+            title: Text(prayer.title),
+            subtitle: Text(prayer.content),
+          );
+        },
       ),
     );
   }
@@ -299,19 +186,6 @@ _buildPrayerContent(): 기도문 내용 표시
         style: const TextStyle(fontSize: 12),
       ),
     );
-  }
-
-  int _getFirstPrayerId(RosaryType type) {
-    switch (type) {
-      case RosaryType.joyful:
-        return 9;
-      case RosaryType.luminous:
-        return 11;
-      case RosaryType.sorrowful:
-        return 12;
-      case RosaryType.glorious:
-        return 13;
-    }
   }
 
   String _getSelectedRosaryTitle() {

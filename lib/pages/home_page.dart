@@ -12,8 +12,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await prayRepository.initDB();
-          await prayRepository.clearPrayers();
+          await prayRepository.initialize();
           await prayRepository.initData();
           Get.snackbar(
             '초기화 완료',

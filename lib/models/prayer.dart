@@ -3,7 +3,8 @@ class Prayer {
   final String title;
   final String content;
   final bool isFavorite;
-  final String prayType;
+  final bool isShow;
+  final String? prayType;
   final String prayKey;
   final String version;
   final DateTime registerDate;
@@ -13,6 +14,7 @@ class Prayer {
       required this.title,
       required this.content,
       required this.isFavorite,
+      required this.isShow,
       required this.prayType,
       required this.prayKey,
       required this.version,
@@ -21,16 +23,16 @@ class Prayer {
 
   factory Prayer.fromMap(Map<String, dynamic> map) {
     return Prayer(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      //isFavorite: map['isFavorite'],
-      isFavorite: map['isFavorite'] == 1, // int 1이면 true, 0이면 false로 변환
-      prayType: map['prayType'],
-      prayKey: map['prayKey'],
-      version: map['version'],
-      registerDate: DateTime.parse(map['registerDate']),
-      modifiedDate: DateTime.parse(map['modifiedDate']),
+      id: map['id'] as int,
+      title: map['title'] as String,
+      content: map['content'] as String,
+      isFavorite: map['isFavorite'] as bool,
+      isShow: map['isShow'] as bool,
+      prayType: map['prayType'] as String?,
+      prayKey: map['prayKey'] as String,
+      version: map['version'] as String,
+      registerDate: DateTime.parse(map['registerDate'] as String),
+      modifiedDate: DateTime.parse(map['modifiedDate'] as String),
     );
   }
 
@@ -39,7 +41,8 @@ class Prayer {
       'id': id,
       'title': title,
       'content': content,
-      'isFavorite': isFavorite ? 1 : 0,
+      'isFavorite': isFavorite,
+      'isShow': isShow,
       'prayType': prayType,
       'prayKey': prayKey,
       'version': version,
@@ -53,6 +56,7 @@ class Prayer {
     String? title,
     String? content,
     bool? isFavorite,
+    bool? isShow,
     String? prayType,
     String? prayKey,
     String? version,
@@ -64,6 +68,7 @@ class Prayer {
       title: title ?? this.title,
       content: content ?? this.content,
       isFavorite: isFavorite ?? this.isFavorite,
+      isShow: isShow ?? this.isShow,
       prayType: prayType ?? this.prayType,
       prayKey: prayKey ?? this.prayKey,
       version: version ?? this.version,
@@ -74,6 +79,6 @@ class Prayer {
 
   @override
   String toString() {
-    return 'Prayer(id: $id, title: $title, content: $content, isFavorite: $isFavorite, prayType: $prayType, prayKey: $prayKey, version: $version, registerDate: $registerDate, modifiedDate: $modifiedDate)';
+    return 'Prayer(id: $id, title: $title, content: $content, isFavorite: $isFavorite, isShow: $isShow, prayType: $prayType, prayKey: $prayKey, version: $version, registerDate: $registerDate, modifiedDate: $modifiedDate)';
   }
 }
