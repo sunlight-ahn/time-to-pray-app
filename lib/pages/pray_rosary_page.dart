@@ -65,8 +65,7 @@ class _ParagraphReaderPageState extends State<ParagraphReaderPage> {
   void _showRosaryDetail() {
     Get.dialog(
       RosaryItemPage(
-        prayerCodes: _currentRosaryItemCodes,
-        prayers: _currentRosaryPrayItems,
+        prayKey: _currentRosaryItemCodes[0],
       ),
     );
   }

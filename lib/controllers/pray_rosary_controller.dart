@@ -9,6 +9,7 @@ class PrayRosaryController extends GetxController {
 
   Future<void> loadPrayer(int prayerId) async {
     try {
+      print('loadPrayer(), prayerId : $prayerId');
       isLoading.value = true;
       final prayers = await _repository.getPrayers();
       final prayer = prayers.firstWhere((p) => p.id == prayerId);
