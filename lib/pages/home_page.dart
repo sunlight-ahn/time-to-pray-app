@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 10.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: const Color(0xFFD9D9D9), //0xFF8E97FD
+              color: const Color(0xFFE3F2FD), // 첫 번째 Container - 강한 파란색 계열
             ),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -173,6 +173,58 @@ class HomePage extends StatelessWidget {
                           ),
                           TextSpan(
                             text: '요한복음 6,60ㄴ-69',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFC8E6C9), // 두 번째 Container - 약간 더 진한 녹색
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Image.asset(
+                          'assets/images/main-img-02.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    flex: 3,
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontFamily: 'HelveticaNeue',
+                          color: Color(0xFF484848),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '말씀사탕\n',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          TextSpan(
+                            text: '하느님께서는 여러분을 평화롭게 살라고 부르셨습니다. (1코린7,15)\n',
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
