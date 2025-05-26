@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/prayer_controller.dart';
+import 'memory_training_page.dart';
 
 class FavoritePrayItem extends StatelessWidget {
   final PrayerController controller;
@@ -51,7 +52,18 @@ class FavoritePrayItem extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.text_snippet_outlined,
                         color: Color(0xFF53B175)),
-                    onPressed: onCheck,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoryTrainingPage(
+                            title: prayer.title,
+                            content: prayer.content,
+
+                          ),
+                        ),
+                      );
+                    },
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),

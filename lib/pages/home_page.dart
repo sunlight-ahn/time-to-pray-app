@@ -220,7 +220,7 @@ class HomePage extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: '말씀사탕\n',
+                            text: '오늘의 말씀\n',
                             style: TextStyle(fontSize: 16),
                           ),
                           TextSpan(
